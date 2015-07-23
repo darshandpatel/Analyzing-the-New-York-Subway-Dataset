@@ -30,15 +30,19 @@ def mann_whitney_plus_means(turnstile_weather):
     '''
 
     ### YOUR CODE HERE ###
+    # Running Mann-Whitney U Test on the given samples
+    # (1. entries per hour on rainy days)
+    # (2. entries per hour on non rainy days)
     test_value = scipy.stats.mannwhitneyu(turnstile_weather[turnstile_weather['rain'] == 1]['ENTRIESn_hourly'],
                              turnstile_weather[turnstile_weather['rain'] == 0]['ENTRIESn_hourly'])
-    print(test_value)
+    #Mean value of two samples
     with_rain_mean = np.mean(turnstile_weather[turnstile_weather['rain'] == 1]['ENTRIESn_hourly'])
     without_rain_mean = np.mean(turnstile_weather[turnstile_weather['rain'] == 0]['ENTRIESn_hourly'])
     U,p=test_value
     return with_rain_mean, without_rain_mean, U, p # leave this line for the grader
 
-file_path = "turnstile_data_master_with_weather.csv"
-file_pointer = open(file_path)
-turnstile_weather = pandas.read_csv(file_pointer)
-mann_whitney_plus_means(turnstile_weather)
+if __name__ == '__main__':
+    file_path = "../data/turnstile_data_master_with_weather.csv"
+    file_pointer = open(file_path)
+    turnstile_weather = pandas.read_csv(file_pointer)
+    print(mann_whitney_plus_means(turnstile_weather))

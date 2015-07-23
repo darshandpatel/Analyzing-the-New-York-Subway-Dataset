@@ -1,6 +1,7 @@
 import numpy as np
 import pandas
 from sklearn.linear_model import SGDRegressor
+from excercises.ps03.ps03_07 import compute_r_squared
 
 """
 In this question, you need to:
@@ -75,17 +76,43 @@ def predictions(dataframe):
     # See this page for more info about dummy variables:                                     #
     # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.get_dummies.html          #
     ##########################################################################################
-    features = dataframe[['fog','rain' ,'tempi','wspdi','precipi','hour']]
 
+    features = dataframe[['tempi']].copy()
+
+    # Hour as dummy feature
+    dummy_hour = pandas.get_dummies(dataframe['hour'], prefix='hour')
+    # dropping one column due to multicollinearity
+    dummy_hour.drop(['hour_16'],axis=1,inplace=True)
+    features = features.join(dummy_hour)
+
+    # Day of week as dummy feature
+    dummy_day = pandas.get_dummies(dataframe['day_week'], prefix='day_week')
+    # dropping one column due to multicollinearity
+    dummy_day.drop(['day_week_0'],axis=1,inplace=True)
+    features = features.join(dummy_day)
+
+
+    # UNIT as dummy features
     dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
+    # dropping one column due to multicollinearity
+    dummy_units.drop(['unit_R003'],axis=1,inplace=True)
     features = features.join(dummy_units)
 
-    dummy_conds = pandas.get_dummies(dataframe['conds'], prefix='conds')
-    features = features.join(dummy_conds)
+    '''
+    # below code is for basic dataset
 
-    dummy_station = pandas.get_dummies(dataframe['station'], prefix='station')
-    features = features.join(dummy_station)
+    # UNIT as dummy features
+    dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
+    # dropping one column due to multicollinearity
+    dummy_units.drop(['unit_R001'],axis=1,inplace=True)
+    features = dummy_units
 
+    # Hour as dummy features
+    dummy_hour = pandas.get_dummies(dataframe['Hour'], prefix='hour')
+    # dropping one column due to multicollinearity
+    dummy_hour.drop(['hour_0'],axis=1,inplace=True)
+    features = features.join(dummy_hour)
+    '''
      # Values
     values = dataframe['ENTRIESn_hourly']
 
@@ -107,7 +134,7 @@ def predictions(dataframe):
     return predictions
 
 if __name__ == '__main__':
-    file_path = "turnstile_data_master_with_weather.csv"
+    file_path = "../data/turnstile_weather_v2.csv"
     file_pointer = open(file_path)
     turnstile_weather = pandas.read_csv(file_pointer)
-    predictions(turnstile_weather)
+    print(compute_r_squared(turnstile_weather['ENTRIESn_hourly'],predictions(turnstile_weather)))

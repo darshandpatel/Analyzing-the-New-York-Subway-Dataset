@@ -1,9 +1,6 @@
 import numpy as np
-import scipy
 import pandas
-import matplotlib.pyplot as plt
 import statsmodels.api as sm
-import scipy.stats as stats
 
 """
 In this question, you need to:
@@ -11,6 +8,12 @@ In this question, you need to:
 2) Select features (in the predictions procedure) and make predictions.
 
 """
+# Normalisation function used to ensure that each numerical variable has mean = 0
+# and standard deviation = 1. Does the same as the function in Lesson 3 of Intro to DS.
+def normalise(data):
+    mean = data.mean()
+    stdev = data.std()
+    return (data - mean)/stdev
 
 def linear_regression(features, values):
     """
@@ -22,10 +25,11 @@ def linear_regression(features, values):
     ###########################
     ### YOUR CODE GOES HERE ###
     ###########################
+    # Adding column which has value 1 in each cell
     features = sm.add_constant(features)
     model = sm.OLS(values,features)
     result = model.fit()
-    print(result.params)
+    #print(result.summary())
     intercept = result.params[0]
     params = result.params[1:]
 
@@ -64,33 +68,45 @@ def predictions(dataframe):
     # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.get_dummies.html          #
     ##########################################################################################
 
-    '''
-    features = dataframe[['rain', 'precipi', 'Hour', 'meantempi']]
+    # below code is for advance dataset
+
+    features = dataframe[['tempi']].copy()
+    features['tempi'] = normalise(features.loc[:,'tempi'])
+
+    # Hour as dummy feature
+    dummy_hour = pandas.get_dummies(dataframe['hour'], prefix='hour')
+     # dropping one column due to multicollinearity
+    dummy_hour.drop(['hour_16'],axis=1,inplace=True)
+    features = features.join(dummy_hour)
+
+    # Day of week as dummy feature
+    dummy_day = pandas.get_dummies(dataframe['day_week'], prefix='day_week')
+     # dropping one column due to multicollinearity
+    dummy_day.drop(['day_week_0'],axis=1,inplace=True)
+    features = features.join(dummy_day)
+
+
+    # UNIT as dummy features
     dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
+     # dropping one column due to multicollinearity
+    dummy_units.drop(['unit_R003'],axis=1,inplace=True)
     features = features.join(dummy_units)
 
-    # Values
-    values = dataframe['ENTRIESn_hourly']
     '''
-
-    features = dataframe[['fog','rain', 'tempi','wspdi','precipi', 'hour']].copy()
-
-    # Normalize the features.
-    '''
-    features['tempi'] = features['tempi'] - features['tempi'].mean()
-    features['wspdi'] = features['wspdi'] - features['wspdi'].mean()
-    features['precipi'] = features['precipi'] - features['precipi'].mean()
-    '''
-    print(features['tempi'].head())
+    # below code is for basic dataset
+    # UNIT as dummy features
     dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
-    features = features.join(dummy_units)
+    # dropping one column due to multicollinearity
+    dummy_units.drop(['unit_R001'],axis=1,inplace=True)
+    features = dummy_units
 
-    dummy_conds = pandas.get_dummies(dataframe['conds'], prefix='conds')
-    features = features.join(dummy_conds)
+    # Hour as dummy features
+    dummy_hour = pandas.get_dummies(dataframe['Hour'], prefix='hour')
+    # dropping one column due to multicollinearity
+    dummy_hour.drop(['hour_0'],axis=1,inplace=True)
+    features = features.join(dummy_hour)
 
-    dummy_station = pandas.get_dummies(dataframe['station'], prefix='station')
-    features = features.join(dummy_station)
-
+    '''
     # Values
     values = dataframe['ENTRIESn_hourly']
 
@@ -100,36 +116,9 @@ def predictions(dataframe):
     predictions = intercept + np.dot(features, params)
     return predictions
 
-
-def plot_residuals(turnstile_weather, predictions):
-    '''
-    Using the same methods that we used to plot a histogram of entries
-    per hour for our data, why don't you make a histogram of the residuals
-    (that is, the difference between the original hourly entry data and the predicted values).
-    Try different binwidths for your histogram.
-
-    Based on this residual histogram, do you have any insight into how our model
-    performed?  Reading a bit on this webpage might be useful:
-
-    http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
-    '''
-
-    #z = (predictions - np.mean(predictions))/np.std(predictions)
-    z = (turnstile_weather['ENTRIESn_hourly'] - np.mean(turnstile_weather['ENTRIESn_hourly']))/np.std(turnstile_weather['ENTRIESn_hourly'])
-    stats.probplot(z,dist="norm",plot=plt)
-    plt.show()
-    '''
-    plt.figure()
-    #(turnstile_weather['ENTRIESn_hourly'] - predictions).hist()
-    (turnstile_weather['ENTRIESn_hourly'] - predictions).plot(kind="hist",bins=10)
-    plt.title("Histogram of Residuals")
-    plt.ylabel("Frequency")
-    plt.xlabel("Prediction Error")
-    plt.show()
-    '''
-
 if __name__ == '__main__':
     file_path = "../data/turnstile_weather_v2.csv"
     file_pointer = open(file_path)
     turnstile_weather = pandas.read_csv(file_pointer)
-    plot_residuals(turnstile_weather,predictions(turnstile_weather))
+    print(predictions(turnstile_weather))
+    print("Process Completed !!")

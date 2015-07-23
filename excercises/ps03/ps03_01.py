@@ -24,10 +24,15 @@ def entries_histogram(turnstile_weather):
     You can see the information contained within the turnstile weather data here:
     https://www.dropbox.com/s/meyki2wl9xfa7yk/turnstile_data_master_with_weather.csv
     '''
+
+    # Create a new data frame from the given turnstile_weather data frame
+    # Which has only two columns
+    # 1) number of entries per hour on rainy days
+    # 2) number of entries per hour on non rainy days
     data_frame = pandas.DataFrame({'Rain' : turnstile_weather[turnstile_weather['rain'] == 1]['ENTRIESn_hourly'],
                                    'No Rain' : turnstile_weather[turnstile_weather['rain'] == 0]['ENTRIESn_hourly']})
-    print(data_frame['Rain'].describe())
-    print(data_frame['No Rain'].describe())
+
+    # Find the maximum number of entries on any given day to set the y-axix limit in plot
     y_max_limit = max(data_frame['Rain'].max(),data_frame['No Rain'].max())
     plt.figure()
     data_frame.plot(kind="hist",bins=40)
