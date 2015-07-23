@@ -36,7 +36,7 @@ def plot_weather_data(turnstile_weather):
     turnstile_weather_grp_by_station_hour = turnstile_weather_grp_by_station_hour.reset_index()
     turnstile_weather_grp_by_station_hour.sort('ENTRIESn_hourly',ascending=False,inplace=True)
     turnstile_weather_grp_by_station_hour = turnstile_weather_grp_by_station_hour.reset_index()
-    
+
     plot = ggplot(aes(x='UNIT',y='ENTRIESn_hourly'),data=turnstile_weather_grp_by_station_hour.head(10)) \
                 + geom_bar(stat='identity') \
                   + ylab("Number of Entries per Hour") + ggtitle("Top 10 UNIT with highest number of Entries per Hour")
