@@ -63,15 +63,19 @@ def predictions(dataframe):
     ##########################################################################################
     #features = dataframe[['fog', 'meandewpti','meanwindspdi','meantempi']]
 
+
+
+    # UNIT as dummy features
     dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
+    # dropping one column due to multicollinearity
     dummy_units.drop(['unit_R001'],axis=1,inplace=True)
-    #features = features.join(dummy_units)
     features = dummy_units
 
+    # Hour as dummy features
     dummy_hour = pandas.get_dummies(dataframe['Hour'], prefix='hour')
+    # dropping one column due to multicollinearity
     dummy_hour.drop(['hour_0'],axis=1,inplace=True)
     features = features.join(dummy_hour)
-
 
     # Values
     values = dataframe['ENTRIESn_hourly']

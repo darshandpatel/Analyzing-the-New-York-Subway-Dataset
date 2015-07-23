@@ -41,7 +41,6 @@ def linear_regression(features, values):
     ###########################
     clf = SGDRegressor()
     model = clf.fit(features,values)
-    print(model.summary())
     params = model.coef_
     intercept = model.intercept_
     return intercept, params
@@ -77,12 +76,15 @@ def predictions(dataframe):
     # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.get_dummies.html          #
     ##########################################################################################
 
+    # UNIT as dummy features
     dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
+    # dropping one column due to multicollinearity
     dummy_units.drop(['unit_R001'],axis=1,inplace=True)
-    #features = features.join(dummy_units)
     features = dummy_units
 
+    # Hour as dummy features
     dummy_hour = pandas.get_dummies(dataframe['Hour'], prefix='hour')
+    # dropping one column due to multicollinearity
     dummy_hour.drop(['hour_0'],axis=1,inplace=True)
     features = features.join(dummy_hour)
 
