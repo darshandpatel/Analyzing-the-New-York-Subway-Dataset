@@ -31,14 +31,20 @@ def plot_weather_data(turnstile_weather):
     subset, about 1/3 of the actual data in the turnstile_weather dataframe.
     '''
 
-    print(ggplot(turnstile_weather,aes('UNIT',wieght='ENTRIESn_hourly')) + geom_bar(color='red'))
+    pandas.options.mode.chained_assignment = None
+    turnstile_weather_grp_by_station_hour = turnstile_weather.groupby('UNIT').sum()
+    turnstile_weather_grp_by_station_hour = turnstile_weather_grp_by_station_hour.reset_index()
+    turnstile_weather_grp_by_station_hour.sort('ENTRIESn_hourly',ascending=False,inplace=True)
+    turnstile_weather_grp_by_station_hour = turnstile_weather_grp_by_station_hour.reset_index()
+    
+    plot = ggplot(aes(x='UNIT',y='ENTRIESn_hourly'),data=turnstile_weather_grp_by_station_hour.head(10)) \
+                + geom_bar(stat='identity') \
+                  + ylab("Number of Entries per Hour") + ggtitle("Top 10 UNIT with highest number of Entries per Hour")
 
-    #print(ggplot(turnstile_weather,aes(x='DATEn',weight='ENTRIESn_hourly',fill='DATEn'))+geom_bar(stat="identity"))
+    print(plot)
 
-    #plot = # your code here
-    #return plot
-
-file_path = "turnstile_test.csv"
-file_pointer = open(file_path)
-turnstile_weather = pandas.read_csv(file_pointer)
-plot_weather_data(turnstile_weather)
+if __name__ == '__main__':
+    file_path = "../data/turnstile_data_master_with_weather.csv"
+    file_pointer = open(file_path)
+    turnstile_weather = pandas.read_csv(file_pointer)
+    plot_weather_data(turnstile_weather)

@@ -30,29 +30,20 @@ def plot_weather_data(turnstile_weather):
     However, due to the limitation of our Amazon EC2 server, we are giving you a random
     subset, about 1/3 of the actual data in the turnstile_weather dataframe.
     '''
+
+    # Topic
+    # Ridership by time of day
+
     pandas.options.mode.chained_assignment = None
-    #turnstile_weather.set_index(['Hour'])
     turnstile_weather_grp_by_hour = turnstile_weather.groupby('Hour').sum()
     turnstile_weather_grp_by_hour = turnstile_weather_grp_by_hour.reset_index()
-    '''
-    turnstile_weather.is_copy = False
-    #print(turnstile_weather_grp_by_unit.head(3))
-    turnstile_weather_grp_by_hour.index.name='Hour'
-    turnstile_weather_grp_by_hour = turnstile_weather_grp_by_hour.reset_index()
-    #print(new.head(3))
-    '''
 
-    #print(ggplot(turnstile_weather_grp_by_hour,aes(x='Hour',y='ENTRIESn_hourly')) + geom_point(color='red') +xlim(0,23)+geom_line(color="blue") + \
-    #    scale_y_continuous(labels='comma') + ggtitle('Head of Cattle Slaughtered by Decade'))
-
-    print(ggplot(turnstile_weather_grp_by_hour,aes(x='Hour',y='ENTRIESn_hourly'))+geom_bar(stat='identity')+xlim(-0.5,23.5)+xlab("Hour")+ylab("Number of Entries")+\
+    print(ggplot(turnstile_weather_grp_by_hour,aes(x='Hour',y='ENTRIESn_hourly')) + \
+          geom_bar(stat='identity') + xlim(-0.5,23.5) + xlab("Hour") + ylab("Number of Entries") +\
           ggtitle("Number of Entries per Hour"))
-    #print(ggplot(turnstile_weather,aes(x='DATEn',weight='ENTRIESn_hourly',fill='DATEn'))+geom_bar(stat="identity"))
 
-    #plot = # your code here
-    #return plot
-
-file_path = "turnstile_data_master_with_weather.csv"
-file_pointer = open(file_path)
-turnstile_weather = pandas.read_csv(file_pointer)
-plot_weather_data(turnstile_weather)
+if __name__ == '__main__':
+    file_path = "../data/turnstile_data_master_with_weather.csv"
+    file_pointer = open(file_path)
+    turnstile_weather = pandas.read_csv(file_pointer)
+    plot_weather_data(turnstile_weather)

@@ -26,6 +26,9 @@ def lineplot(hr_year_csv):
 
     file_pointer = open(hr_year_csv)
     hr_dataframe = pandas.read_csv(file_pointer)
-    gg = ggplot(hr_dataframe,aes(x='yearID',y='HR'))+geom_line(color='red')+xlab('Year')+ylab('Home Runs')+ggtitle('Number of Home Runs')
+    gg = ggplot(hr_dataframe,aes(x='yearID',y='HR')) + geom_line(color='red') + \
+         xlab('Year') + ylab('Home Runs') + ggtitle('Number of Home Runs')
     return gg
-print(lineplot('hr_year.csv'))
+
+if __name__ == '__main__':
+    print(lineplot('../data/hr_year.csv'))
